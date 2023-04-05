@@ -18,11 +18,22 @@ typedef struct{
 void inicializa(tfila *f){
 	f->ini = NULL;
 	f->fim = NULL;
+	f->tamanho = 0;
 	//
 }
 //--------------------------
 int enqueue(tfila *f, tdado x){
- 	
+ 	tno *novo = malloc(sizeof(tno));
+ 	novo->dado = x;
+ 	novo->prox = NULL;
+ 	if (f->ini==NULL)//VAZIA
+ 		f->ini = novo;
+	else 
+		f->fim->prox = novo;
+		
+	f->fim = novo;
+	f->tamanho++;
+	return 1;	
 }
 //---------------------------
 tdado dequeue(tfila *f){
@@ -34,7 +45,12 @@ int isEmpty(tfila f){
 }
 //--------------------------
 void mostra(tfila f){
-
+	while(f.ini!=NULL){
+		printf("%s : %d|->",f.ini->dado.processo,
+							f.ini->dado.tempo);
+		f.ini = f.ini->prox; //deslocando
+	}//FIM WHILE
+	printf("\n");
 }
 //----------------------------
 int menu(){
