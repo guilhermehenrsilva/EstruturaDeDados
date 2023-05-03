@@ -267,7 +267,6 @@ public class FormFila extends javax.swing.JFrame {
     private void btnAtenderFimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtenderFimActionPerformed
         if(!minhaDeque.isEmpty()){
         Pessoa p = minhaDeque.removeLast();
-        //txtProx.setText("Atendendo: \n "+p + " \n ");
         mostra();
         }            // TODO add your handling code here:
     }//GEN-LAST:event_btnAtenderFimActionPerformed
