@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head> 
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Tarefas em JavaScript</title>
@@ -31,15 +31,14 @@
         
         <br />
 
-        <label for="lblindice">Indice:</label>
-        <br />
-        <input type="text" class="form-control" id="txtIndice">
-      
+            
       <br />
 
         
-        <button class="btn btn-info" onclick="adicionarElemento()">Adicionar tarefa</button>
-        <button class="btn btn-warning" onclick="removerElemento()">Resolver tarefa</button>
+        <button class="btn btn-info" onclick="adicionarOrdenado()">Adicionar tarefa</button>
+        <button class="btn btn-warning" onclick="removerPrimeiroElemento()">Resolver tarefa</button>
+        <button class="btn btn-warning" onclick="mostraPrimeiro()">Próxima tarefa</button>
+        <button class="btn btn-warning" onclick="mostrarMaisAntiga()">Primeira Tarefa</button>
         <br />
         <br />
       </div>

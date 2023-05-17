@@ -1,6 +1,22 @@
- // Crie uma instância da lista
- let minhaLista = new LinkedList();
+// Crie uma instância da fila
+let minhaLista = new LinkedList();
+
 //--------------------------------------------------------------------------------------------
+//limpa os campos após inserção
+
+function limpaCampos() {
+    const descricao = document.getElementById("txtnovaTarefa");
+    const prioridade = document.getElementById("txtnovaPrioridade");
+
+    descricao.value = "";
+    prioridade.value = "";
+
+    return;
+}
+
+
+//--------------------------------------------------------------------------------------------
+
  // Função para adicionar um elemento 
  function adicionarElemento() {
     const descricao = document.getElementById("txtnovaTarefa");
@@ -11,54 +27,111 @@
       alert("Preencha todos os campos antes de adicionar à fila!");
       return;
     }
-      const novaTarefa =   
-      new Tarefa(descricao.value,prioridade.value,
-                  obterDataAtual(),obterHoraAtual());  
-      minhaLista.addAtIndex(indice.value,novaTarefa);
-      mostrarLista(); 
-      descricao.value = "";
-      prioridade.value="";
-      indice.value="";
-      descricao.focus();           
+    
+    // instanciar nova tarefa e inserir no indice especificado
+
+    const novaTarefa = new Tarefa(descricao.value, prioridade.value, obterDataAtual(), obterHoraAtual());
+
+    minhaLista.addAtIndex(indice.value, novaTarefa);
+    mostrarLista();
+
+    descricao.value = "";
+    prioridade.value = "";
+    indice.value = "";
+    descricao.focus();
  }
  //--------------------------------------------------------------------------------------------
   // Função para adicionar um elemento ordenado
   function adicionarOrdenado() {
     const descricao = document.getElementById("txtnovaTarefa").value.trim();
     const prioridade = document.getElementById("txtnovaPrioridade").value.trim();
-     
+  
+    if(descricao.value === "" || prioridade.value === "") {
+        alert("Todos os campos devem ser preenchidos!");
+        return; 
+    }
+    
     const novaTarefa = new Tarefa(descricao, prioridade, obterDataAtual(), obterHoraAtual());
-    let indice = 0;
-    let novaPrioridade = parseInt(novaTarefa.prioridade);
+    let indice = 1;
     let retorno = false;
-    if(minhaLista.isEmpty())
+    let novaPrioridade = parseInt(novaTarefa.prioridade);
+
+    if(minhaLista.isEmpty()) {
        retorno = minhaLista.addFirst(novaTarefa);
-    else if(novaPrioridade >= minhaLista.last().prioridade)
+    }
+    else if(novaPrioridade >= minhaLista.getLast().prioridade) {
        retorno = minhaLista.addLast(novaTarefa);
-    else if(novaPrioridade < minhaLista.first().prioridade)
+    }
+    else if(novaPrioridade < minhaLista.getFirst().prioridade) {
        retorno = minhaLista.addFirst(novaTarefa);
+    }
     else{
-      // implementar a insercao ordenada de acordo com a prioridade
+        minhaLista.forEach((item) => {
+            if(item.prioridade < novaPrioridade){
+                retorno = minhaLista.addAtIndex(indice, novaTarefa);
+                return;
+            }
+            indice++;
+        });
     }
    
+    mostrarLista();
+    limpaCampos();
+    //descricao.focus();
  }
 //--------------------------------------------------------------------------------------------
  // Função para remover o primeiro elemento da fila
- function removerElemento() {
+ function removerPrimeiroElemento() {
     if(minhaLista.isEmpty()) 
-      alert("Lista vazia!");
+        alert("Lista vazia!");
     else{  
-      // remover e mostrar mensagem de remocao
+        let del = minhaLista.deleteFirst();
+        mostrarMensagemRemocao(del);
+        mostrarLista();
     }
  }
+
+//---------------------------------------------------------------------------------------------
+
+function mostrarMaisAntiga() {
+    let tarefa = minhaLista.getFirst();
+
+    minhaLista.forEach((item) => {
+        tarefa = comparaTarefasDataHora(tarefa, item);
+    });
+
+    mostrarMensagemPrimeiro(tarefa);
+    return;
+}
+
+//---------------------------------------------------------------------------------------------
+
+function mostraPrimeiro() {
+    if(minhaLista.isEmpty()){
+        alert("Lista vazia!");
+    }
+    else {  
+        let del = minhaLista.deleteFirst();
+        mostrarMensagemPrimeiro(del);
+        minhaLista.addFirst(del);
+    }
+}
 
 //--------------------------------------------------------------------------------------------
 function mostrarMensagemRemocao(tarefaRealizada) {
     const mensagem = document.getElementById("mensagem-remocao");
-    mensagem.innerHTML ="Tarefa "+ tarefaRealizada.descricao + ", realizada em "; // apresentar a mensagem de remoção com dias e horas
+    mensagem.innerHTML = "Tarefa: "+ tarefaRealizada.descricao + ", realizada em " + calcularDiferencaHoras(tarefaRealizada.hora, obterHoraAtual()); // apresentar a mensagem de remoção com dias e horas
     mensagem.style.display = "block";
 
-  }
+}
+
+//--------------------------------------------------------------------------------------------
+function mostrarMensagemPrimeiro(tarefaRealizada) {
+    const mensagem = document.getElementById("mensagem-remocao");
+    mensagem.innerHTML = "Tarefa: "+ tarefaRealizada.descricao + ", criada há " + calcularDiferencaHoras(tarefaRealizada.hora, obterHoraAtual()); // apresentar a mensagem de remoção com dias e horas
+    mensagem.style.display = "block";
+}
+
 //-------------------------------------------------------------------------------------------- 
 // Função para atualizar a exibição da fila
  function mostrarLista() {
@@ -126,20 +199,20 @@ function calcularDiferencaDias(dataInicial, dataFinal) {
 }
 //--------------------------------------------------------------------------------------------
 function converterDataFormatoISO8601(data) {
-  const partes = data.split('/');
-  const dia = partes[0].padStart(2, '0');
-  const mes = partes[1].padStart(2, '0');
-  const ano = partes[2];
-  return `${ano}-${mes}-${dia}`;
+    const partes = data.split('/');
+    const dia = partes[0].padStart(2, '0');
+    const mes = partes[1].padStart(2, '0');
+    const ano = partes[2];
+    return `${ano}-${mes}-${dia}`;
 }
 //--------------------------------------------------------------------------------------------
 function comparaTarefasDataHora(tarefa1, tarefa2) {
-  const dataHoraTarefa1 = new Date(`${converterDataFormatoISO8601(tarefa1.data)}T${tarefa1.hora}`);
-  const dataHoraTarefa2 = new Date(`${converterDataFormatoISO8601(tarefa2.data)}T${tarefa2.hora}`);
-  if (dataHoraTarefa1.getTime() < dataHoraTarefa2.getTime()) {
-    return tarefa1;
-  } else {
-    return tarefa2;
-  }
+    const dataHoraTarefa1 = new Date(`${converterDataFormatoISO8601(tarefa1.data)}T${tarefa1.hora}`);
+    const dataHoraTarefa2 = new Date(`${converterDataFormatoISO8601(tarefa2.data)}T${tarefa2.hora}`);
+    if (dataHoraTarefa1.getTime() < dataHoraTarefa2.getTime()) {
+        return tarefa1;
+    }else {
+        return tarefa2;
+    }
 }
-
+//--------------------------------------------------------------------------------------------
